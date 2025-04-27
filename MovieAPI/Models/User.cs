@@ -20,13 +20,13 @@ namespace MovieAPI.Models
         public string Email { get; set; }
 
         [Column("loz_k")]
-        public string Password { get; set; }
+        public string PasswordHash { get; set; }
 
         [Column("uloga_k")]
         public string Role { get; set; }
 
         [Column("rang_k")]
-        public string Rank { get; set; }
+        public int Rank { get; set; }
 
         [Column("slika_k")]
         public string? ImageUrl { get; set; }

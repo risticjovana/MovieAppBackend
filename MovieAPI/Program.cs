@@ -1,8 +1,6 @@
 using MovieAPI;
 using Microsoft.EntityFrameworkCore;
-using Npgsql.EntityFrameworkCore.PostgreSQL;
-
-
+using MovieAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +13,8 @@ builder.Services.AddSwaggerGen();
 //connection to database
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<AuthService>();
 
 var app = builder.Build();
 
