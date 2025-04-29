@@ -1,7 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MovieAPI.Models.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MovieAPI.Models
+namespace MovieAPI.Models.User
 {
     [Table("korisnik")]
     public class User
@@ -22,8 +23,15 @@ namespace MovieAPI.Models
         [Column("loz_k")]
         public string PasswordHash { get; set; }
 
+        [NotMapped]
+        public UserRole Role
+        {
+            get => Enum.Parse<UserRole>(RoleString);
+            set => RoleString = value.ToString();
+        }
+
         [Column("uloga_k")]
-        public string Role { get; set; }
+        public string RoleString { get; set; }
 
         [Column("rang_k")]
         public int Rank { get; set; }

@@ -1,7 +1,7 @@
 ﻿namespace MovieAPI;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using MovieAPI.Models;
+using MovieAPI.Models.User;
 
 public class AppDbContext : DbContext
 {
@@ -9,4 +9,5 @@ public class AppDbContext : DbContext
         { }
 
     public DbSet<User> Users { get; set; }
+    public DbSet<RegularUser> RegularUsers { get; set; }
 }

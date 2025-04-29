@@ -47,3 +47,14 @@ C:\Users\Jovana\source\repos\MovieAPI\MovieAPI\bin\Debug\net7.0\Microsoft.Entity
 C:\Users\Jovana\source\repos\MovieAPI\MovieAPI\bin\Debug\net7.0\Microsoft.Extensions.DependencyModel.dll
 C:\Users\Jovana\source\repos\MovieAPI\MovieAPI\bin\Debug\net7.0\Mono.TextTemplating.dll
 C:\Users\Jovana\source\repos\MovieAPI\MovieAPI\bin\Debug\net7.0\System.CodeDom.dll
+C:\Users\Jovana\source\repos\MovieAPI\MovieAPI\bin\Debug\net7.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\Jovana\source\repos\MovieAPI\MovieAPI\bin\Debug\net7.0\Microsoft.Bcl.AsyncInterfaces.dll
+C:\Users\Jovana\source\repos\MovieAPI\MovieAPI\bin\Debug\net7.0\Microsoft.Bcl.Memory.dll
+C:\Users\Jovana\source\repos\MovieAPI\MovieAPI\bin\Debug\net7.0\Microsoft.Bcl.TimeProvider.dll
+C:\Users\Jovana\source\repos\MovieAPI\MovieAPI\bin\Debug\net7.0\Microsoft.IdentityModel.Abstractions.dll
+C:\Users\Jovana\source\repos\MovieAPI\MovieAPI\bin\Debug\net7.0\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\Users\Jovana\source\repos\MovieAPI\MovieAPI\bin\Debug\net7.0\Microsoft.IdentityModel.Logging.dll
+C:\Users\Jovana\source\repos\MovieAPI\MovieAPI\bin\Debug\net7.0\Microsoft.IdentityModel.Protocols.dll
+C:\Users\Jovana\source\repos\MovieAPI\MovieAPI\bin\Debug\net7.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+C:\Users\Jovana\source\repos\MovieAPI\MovieAPI\bin\Debug\net7.0\Microsoft.IdentityModel.Tokens.dll
+C:\Users\Jovana\source\repos\MovieAPI\MovieAPI\bin\Debug\net7.0\System.IdentityModel.Tokens.Jwt.dll
