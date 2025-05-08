@@ -31,8 +31,9 @@ builder.Services.AddCors(options =>
         });
 });
 
-// Add AuthService for handling user authentication
+
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<MovieService>();
 
 // Configure JWT Authentication
 var jwtSection = builder.Configuration.GetSection("JwtSettings");
