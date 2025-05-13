@@ -31,6 +31,7 @@ namespace MovieAPI.Services
                                              Watched = vc.Watched,
                                              Duration = m.Duration,
                                              DirectorId = vc.DirectorId,
+                                             Image = m.Image,
                                          }).ToListAsync();
 
             return availableMovies;

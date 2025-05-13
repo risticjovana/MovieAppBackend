@@ -13,6 +13,9 @@ namespace MovieAPI.Models.TicketReservation
         [Column("trajanje_f")]
         public int Duration { get; set; }
 
+        [Column("imageurl")]
+        public string Image { get; set; }
+
         public virtual VisualContent VisualContent { get; set; }
     }
 }
