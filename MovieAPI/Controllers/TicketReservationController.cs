@@ -27,5 +27,18 @@ namespace MovieAPI.Controllers
 
             return Ok(movies);
         }
+
+        [HttpGet("projectionsByContent/{contentId}")]
+        public async Task<ActionResult<List<CinemaWithProjectionsDTO>>> GetProjectionsByContentId(int contentId)
+        {
+            var groupedProjections = await _movieService.GetGroupedProjectionsByContentIdAsync(contentId);
+
+            if (groupedProjections == null || groupedProjections.Count == 0)
+            {
+                return NotFound($"No projections found for content ID {contentId}.");
+            }
+
+            return Ok(groupedProjections);
+        }
     }
 }

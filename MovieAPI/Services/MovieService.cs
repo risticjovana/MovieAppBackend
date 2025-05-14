@@ -25,16 +25,43 @@ namespace MovieAPI.Services
                                              Name = vc.Name,
                                              Description = vc.Description,
                                              Rating = vc.Rating,
-                                             ContentTypeString = vc.ContentTypeString, 
+                                             ContentTypeString = vc.ContentTypeString,
                                              Year = vc.Year,
                                              IsFavorite = vc.IsFavorite,
                                              Watched = vc.Watched,
                                              Duration = m.Duration,
                                              DirectorId = vc.DirectorId,
                                              Image = m.Image,
-                                         }).ToListAsync();
+                                         })
+                            .Distinct()
+                            .ToListAsync();
 
             return availableMovies;
         }
+
+        public async Task<List<CinemaWithProjectionsDTO>> GetGroupedProjectionsByContentIdAsync(int contentId)
+        {
+            var groupedProjections = await (from p in _dbContext.Projections
+                                            where p.ContentId == contentId
+                                            join c in _dbContext.Cinemas on p.CinemaId equals c.CinemaId
+                                            group new { p, c } by new { c.CinemaId, c.Name } into g
+                                            select new CinemaWithProjectionsDTO
+                                            {
+                                                CinemaId = g.Key.CinemaId,
+                                                CinemaName = g.Key.Name,
+                                                Projections = g.Select(x => new ProjectionDTO
+                                                {
+                                                    Id = x.p.Id,
+                                                    Date = x.p.Date,
+                                                    Time = x.p.Time,
+                                                    AvailableTickets = x.p.AvailableTickets,
+                                                    RoomNumber = x.p.RoomNumber
+                                                }).ToList()
+                                            }).ToListAsync();
+
+            return groupedProjections;
+        }
+
+
     }
 }

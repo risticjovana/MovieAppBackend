@@ -28,9 +28,5 @@ namespace MovieAPI.Models.TicketReservation
 
         [Column("id_b")]
         public int CinemaId { get; set; }
-
-        public virtual VisualContent VisualContent { get; set; }
-
-        public virtual Cinema Cinema { get; set; }
     }
 }
