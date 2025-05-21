@@ -55,7 +55,8 @@ namespace MovieAPI.Services
                                                     Date = x.p.Date,
                                                     Time = x.p.Time,
                                                     AvailableTickets = x.p.AvailableTickets,
-                                                    RoomNumber = x.p.RoomNumber
+                                                    RoomNumber = x.p.RoomNumber,
+                                                    SeatNumber = x.p.SeatNumber
                                                 }).ToList()
                                             }).ToListAsync();
 

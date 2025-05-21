@@ -28,5 +28,8 @@ namespace MovieAPI.Models.TicketReservation
 
         [Column("id_b")]
         public int CinemaId { get; set; }
+
+        [Column("br_krt")]
+        public int SeatNumber { get; set; }
     }
 }

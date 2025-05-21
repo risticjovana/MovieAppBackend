@@ -7,5 +7,6 @@
         public TimeSpan Time { get; set; }
         public int AvailableTickets { get; set; }
         public int RoomNumber { get; set; }
+        public int SeatNumber { get; set; }
     }
 }
