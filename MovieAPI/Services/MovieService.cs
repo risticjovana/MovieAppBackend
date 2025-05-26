@@ -63,6 +63,37 @@ namespace MovieAPI.Services
             return groupedProjections;
         }
 
+        public async Task<bool> ReserveTicketAsync(Ticket ticket)
+        {
+            try
+            {
+                // Provera da li već postoji karta za isti projekat, sedište i korisnika
+                var existingTicket = await _dbContext.Tickets.FirstOrDefaultAsync(t =>
+                    t.ProjectionId == ticket.ProjectionId &&
+                    t.SeatNumber == ticket.SeatNumber &&
+                    t.UserId == ticket.UserId);
 
+                if (existingTicket != null)
+                {
+                    return false;
+                }
+
+                ticket.TicketId = GetNextTicketId();
+
+                await _dbContext.Tickets.AddAsync(ticket);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        private int GetNextTicketId()
+        {
+            var lastTicket = _dbContext.Tickets.OrderByDescending(t => t.TicketId).FirstOrDefault();
+            return lastTicket == null ? 1 : lastTicket.TicketId + 1;
+        }
     }
 }

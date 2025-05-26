@@ -40,5 +40,30 @@ namespace MovieAPI.Controllers
 
             return Ok(groupedProjections);
         }
+
+        [HttpPost("reserve")]
+        public async Task<ActionResult> ReserveTicket([FromBody] Ticket ticket)
+        {
+            if (ticket == null)
+            {
+                return BadRequest("Ticket data is required.");
+            }
+
+            if (ticket.PurchaseTime == default)
+            {
+                ticket.PurchaseTime = DateTime.UtcNow;
+            }
+
+            var success = await _movieService.ReserveTicketAsync(ticket);
+
+            if (success)
+            {
+                return Ok("Ticket reserved successfully.");
+            }
+            else
+            {
+                return StatusCode(500, "An error occurred while reserving the ticket.");
+            }
+        }
     }
 }
