@@ -65,5 +65,17 @@ namespace MovieAPI.Controllers
                 return StatusCode(500, "An error occurred while reserving the ticket.");
             }
         }
+        [HttpGet("myTicketReservations/{userId}")]
+        public async Task<ActionResult<List<Ticket>>> GetUsersReservations(int userId)
+        {
+            var tickets = await _movieService.GetTicketsByUserIdAsync(userId);
+
+            if (tickets == null || tickets.Count == 0)
+            {
+                return NotFound("No available movies found.");
+            }
+
+            return Ok(tickets);
+        }
     }
 }

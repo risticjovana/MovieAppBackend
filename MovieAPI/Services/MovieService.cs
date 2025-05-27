@@ -67,17 +67,6 @@ namespace MovieAPI.Services
         {
             try
             {
-                // Provera da li već postoji karta za isti projekat, sedište i korisnika
-                var existingTicket = await _dbContext.Tickets.FirstOrDefaultAsync(t =>
-                    t.ProjectionId == ticket.ProjectionId &&
-                    t.SeatNumber == ticket.SeatNumber &&
-                    t.UserId == ticket.UserId);
-
-                if (existingTicket != null)
-                {
-                    return false;
-                }
-
                 ticket.TicketId = GetNextTicketId();
 
                 await _dbContext.Tickets.AddAsync(ticket);
@@ -88,6 +77,13 @@ namespace MovieAPI.Services
             {
                 return false;
             }
+        }
+
+        public async Task<List<Ticket>> GetTicketsByUserIdAsync(int userId)
+        {
+            return await _dbContext.Tickets
+                .Where(t => t.UserId == userId)
+                .ToListAsync();
         }
 
         private int GetNextTicketId()
