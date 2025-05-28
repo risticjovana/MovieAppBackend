@@ -65,6 +65,7 @@ namespace MovieAPI.Controllers
                 return StatusCode(500, "An error occurred while reserving the ticket.");
             }
         }
+
         [HttpGet("myTicketReservations/{userId}")]
         public async Task<ActionResult<List<Ticket>>> GetUsersReservations(int userId)
         {
@@ -76,6 +77,36 @@ namespace MovieAPI.Controllers
             }
 
             return Ok(tickets);
+        }
+
+        [HttpGet("getmoviebyid/{contentId}")]
+        public async Task<IActionResult> GetMovieById(int contentId)
+        {
+            var movie = await _movieService.GetMovieByIdAsync(contentId);
+            if (movie == null)
+                return NotFound();
+
+            return Ok(movie);
+        }
+
+        [HttpGet("getcinemabyid/{cinemaId}")]
+        public async Task<IActionResult> GetCinemaById(int cinemaId)
+        {
+            var cinema = await _movieService.GetCinemaByIdAsync(cinemaId);
+            if (cinema == null)
+                return NotFound();
+
+            return Ok(cinema);
+        }
+
+        [HttpGet("getprojectionbyid/{projectionId}")]
+        public async Task<IActionResult> GetProjectionById(int projectionId)
+        {
+            var projection = await _movieService.GetProjectionByIdAsync(projectionId);
+            if (projection == null)
+                return NotFound();
+
+            return Ok(projection);
         }
     }
 }

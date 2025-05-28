@@ -91,5 +91,53 @@ namespace MovieAPI.Services
             var lastTicket = _dbContext.Tickets.OrderByDescending(t => t.TicketId).FirstOrDefault();
             return lastTicket == null ? 1 : lastTicket.TicketId + 1;
         }
+        public async Task<MovieDTO?> GetMovieByIdAsync(int contentId)
+        {
+            var movie = await (from vc in _dbContext.VisualContents
+                               join m in _dbContext.Movies on vc.ContentId equals m.ContentId
+                               where vc.ContentId == contentId
+                               select new MovieDTO
+                               {
+                                   ContentId = vc.ContentId,
+                                   Name = vc.Name,
+                                   Description = vc.Description,
+                                   Rating = vc.Rating,
+                                   ContentTypeString = vc.ContentTypeString,
+                                   Year = vc.Year,
+                                   IsFavorite = vc.IsFavorite,
+                                   Watched = vc.Watched,
+                                   Duration = m.Duration,
+                                   DirectorId = vc.DirectorId,
+                                   Image = m.Image,
+                               }).FirstOrDefaultAsync();
+
+            return movie;
+        }
+        public async Task<Cinema?> GetCinemaByIdAsync(int cinemaId)
+        {
+            return await _dbContext.Cinemas
+                .Where(c => c.CinemaId == cinemaId)
+                .Select(c => new Cinema
+                {
+                    CinemaId = c.CinemaId,
+                    Name = c.Name,
+                    Location = c.Location,
+                    Type = c.Type
+                }).FirstOrDefaultAsync();
+        }
+        public async Task<ProjectionDTO?> GetProjectionByIdAsync(int projectionId)
+        {
+            return await _dbContext.Projections
+                .Where(p => p.Id == projectionId)
+                .Select(p => new ProjectionDTO
+                {
+                    Id = p.Id,
+                    Date = p.Date,
+                    Time = p.Time,
+                    AvailableTickets = p.AvailableTickets,
+                    RoomNumber = p.RoomNumber,
+                    SeatNumber = p.SeatNumber
+                }).FirstOrDefaultAsync();
+        }
     }
 }
