@@ -44,11 +44,12 @@ namespace MovieAPI.Services
             var groupedProjections = await (from p in _dbContext.Projections
                                             where p.ContentId == contentId
                                             join c in _dbContext.Cinemas on p.CinemaId equals c.CinemaId
-                                            group new { p, c } by new { c.CinemaId, c.Name } into g
+                                            group new { p, c } by new { c.CinemaId, c.Name, c.Type } into g
                                             select new CinemaWithProjectionsDTO
                                             {
                                                 CinemaId = g.Key.CinemaId,
                                                 CinemaName = g.Key.Name,
+                                                Type = g.Key.Type,
                                                 Projections = g.Select(x => new ProjectionDTO
                                                 {
                                                     Id = x.p.Id,
