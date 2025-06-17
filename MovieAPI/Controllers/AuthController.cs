@@ -36,5 +36,37 @@ namespace MovieAPI.Controllers
 
             return Ok(new { token });
         }
+
+        [HttpGet("user/{id}")]
+        public async Task<IActionResult> GetUserById(int id)
+        {
+            var user = await _authService.GetUserByIdAsync(id);
+
+            if (user == null)
+                return NotFound("User not found.");
+
+            // You may want to limit which data is returned
+            return Ok(new
+            {
+                user.Id,
+                user.FirstName,
+                user.LastName,
+                user.Email,
+                user.Status,
+                user.Role,
+                user.Rank
+            });
+        }
+
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordModel model)
+        {
+            var result = await _authService.ChangePasswordAsync(model.UserId, model.CurrentPassword, model.NewPassword);
+
+            if (result.Contains("incorrect") || result.Contains("not found"))
+                return BadRequest(result);
+
+            return Ok(result);
+        }
     }
 }

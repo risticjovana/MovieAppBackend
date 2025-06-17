@@ -139,5 +139,23 @@ namespace MovieAPI.Services
             var lastUser = _dbContext.Users.OrderByDescending(u => u.Id).FirstOrDefault();
             return lastUser == null ? 1 : lastUser.Id + 1;
         }
+        public async Task<User?> GetUserByIdAsync(int userId)
+        {
+            return await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        }
+        public async Task<string> ChangePasswordAsync(int userId, string currentPassword, string newPassword)
+        {
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null)
+                return "User not found.";
+
+            if (!VerifyPassword(currentPassword, user.PasswordHash))
+                return "Current password is incorrect.";
+
+            user.PasswordHash = HashPasswordWithSalt(newPassword);
+            await _dbContext.SaveChangesAsync();
+
+            return "Password changed successfully.";
+        }
     }
 }
