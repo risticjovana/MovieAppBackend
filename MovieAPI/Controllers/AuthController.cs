@@ -68,5 +68,25 @@ namespace MovieAPI.Controllers
 
             return Ok(result);
         }
+
+        [HttpPost("request-role")]
+        public async Task<IActionResult> RequestRoleChange([FromBody] RoleChangeRequestModel model)
+        {
+            // Convert English role to Serbian before sending to service
+            var requestedRoleSerbian = RoleTranslationHelper.ToSerbian(model.RequestedRole);
+
+            var result = await _authService.RequestRoleChangeAsync(model.UserId, model.RequestedRole);
+
+            if (result.Contains("not found") || result.Contains("already"))
+                return BadRequest(result);
+
+            return Ok(new
+            {
+                message = result,
+                requestedRoleSerbian = requestedRoleSerbian,
+                requestedRoleEnglish = model.RequestedRole
+            });
+        }
+
     }
 }

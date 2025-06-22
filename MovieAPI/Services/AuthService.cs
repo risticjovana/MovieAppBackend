@@ -157,5 +157,31 @@ namespace MovieAPI.Services
 
             return "Password changed successfully.";
         }
+        public async Task<string> RequestRoleChangeAsync(int userId, string requestedRole)
+        {
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null)
+                return "User not found.";
+
+            // Convert from English (frontend) to Serbian (backend/database)
+            var requestedRoleSerbian = RoleTranslationHelper.ToSerbian(requestedRole);
+
+            if (user.Role.ToString().ToLower() == requestedRoleSerbian.ToLower())
+                return "You already have this role.";
+
+            var request = new Request
+            {
+                UserId = userId,
+                RequestedRole = requestedRoleSerbian,
+                Status = "pending",
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await _dbContext.Requests.AddAsync(request);
+            await _dbContext.SaveChangesAsync();
+
+            return $"Role change request to '{requestedRole}' submitted for review.";
+        }
+
     }
 }
