@@ -88,5 +88,51 @@ namespace MovieAPI.Controllers
             });
         }
 
+        [HttpGet("role-requests")]
+        public async Task<IActionResult> GetAllRequests()
+        {
+            var requests = await _authService.GetAllRoleRequestsAsync();
+
+            var result = requests.Select(r => new {
+                r.Id,
+                r.Status,
+                r.RequestedRole,
+                r.CreatedAt,
+                User = new
+                {
+                    r.User.Id,
+                    r.User.FirstName,
+                    r.User.LastName,
+                    r.User.Email,
+                    r.User.Role
+                },
+                RequestedRoleEnglish = RoleTranslationHelper.TranslateToEnglish(r.RequestedRole)
+            });
+
+            return Ok(result);
+        }
+
+        [HttpPost("verify-role/{id}")]
+        public async Task<IActionResult> VerifyRequest(int id)
+        {
+            var result = await _authService.VerifyRoleRequestAsync(id);
+
+            if (result.Contains("not found"))
+                return NotFound(result);
+
+            return Ok(result);
+        }
+
+        [HttpPost("decline-role/{id}")]
+        public async Task<IActionResult> DeclineRequest(int id)
+        {
+            var result = await _authService.DeclineRoleRequestAsync(id);
+
+            if (result.Contains("not found"))
+                return NotFound(result);
+
+            return Ok(result);
+        }
+
     }
 }

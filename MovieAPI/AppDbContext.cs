@@ -11,6 +11,10 @@ public class AppDbContext : DbContext
 
     public DbSet<User> Users { get; set; }
     public DbSet<RegularUser> RegularUsers { get; set; }
+    public DbSet<Administrator> Administrators { get; set; }
+    public DbSet<Critic> Critics { get; set; }
+    public DbSet<Editor> Editors { get; set; }
+    public DbSet<Moderator> Moderators { get; set; }
     public DbSet<Movie> Movies { get; set; }
     public DbSet<VisualContent> VisualContents { get; set; }
     public DbSet<Projection> Projections { get; set; }

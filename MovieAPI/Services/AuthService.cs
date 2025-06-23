@@ -183,5 +183,95 @@ namespace MovieAPI.Services
             return $"Role change request to '{requestedRole}' submitted for review.";
         }
 
+        public async Task<List<Request>> GetAllRoleRequestsAsync()
+        {
+            return await _dbContext.Requests
+                .Include(r => r.User)
+                .OrderByDescending(r => r.CreatedAt)
+                .ToListAsync();
+        }
+
+        public async Task<string> VerifyRoleRequestAsync(int requestId)
+        {
+            var request = await _dbContext.Requests
+                .Include(r => r.User)
+                .FirstOrDefaultAsync(r => r.Id == requestId);
+
+            if (request == null)
+                return "Request not found.";
+
+            var user = request.User;
+            var oldRole = user.RoleString.ToLower();
+            var newRole = request.RequestedRole.ToLower();
+
+            //Remove from old role table
+            switch (oldRole)
+            {
+                case "obican_korisnik":
+                    var regUser = await _dbContext.RegularUsers.FindAsync(user.Id);
+                    if (regUser != null) _dbContext.RegularUsers.Remove(regUser);
+                    break;
+                case "administrator":
+                    var admin = await _dbContext.Administrators.FindAsync(user.Id);
+                    if (admin != null) _dbContext.Administrators.Remove(admin);
+                    break;
+                case "urednik_sadrzaja":
+                    var editor = await _dbContext.Editors.FindAsync(user.Id);
+                    if (editor != null) _dbContext.Editors.Remove(editor);
+                    break;
+                case "moderator":
+                    var mod = await _dbContext.Moderators.FindAsync(user.Id);
+                    if (mod != null) _dbContext.Moderators.Remove(mod);
+                    break;
+                case "filmski_kriticar":
+                    var critic = await _dbContext.Critics.FindAsync(user.Id);
+                    if (critic != null) _dbContext.Critics.Remove(critic);
+                    break;
+            }
+
+            // 2. Add to new role table
+            switch (newRole)
+            {
+                case "obican_korisnik":
+                    await _dbContext.RegularUsers.AddAsync(new RegularUser { Id = user.Id });
+                    break;
+                case "administrator":
+                    await _dbContext.Administrators.AddAsync(new Administrator { Id = user.Id });
+                    break;
+                case "urednik_sadrzaja":
+                    await _dbContext.Editors.AddAsync(new Editor { Id = user.Id });
+                    break;
+                case "moderator":
+                    await _dbContext.Moderators.AddAsync(new Moderator { Id = user.Id });
+                    break;
+                case "filmski_kriticar":
+                    await _dbContext.Critics.AddAsync(new Critic { Id = user.Id });
+                    break;
+                default:
+                    return "Invalid role.";
+            }
+
+            //Update the user role and request status
+            user.RoleString = request.RequestedRole;
+            request.Status = "approved";
+
+            await _dbContext.SaveChangesAsync();
+
+            return $"User {user.Email} role updated to {request.RequestedRole}.";
+        }
+
+
+        public async Task<string> DeclineRoleRequestAsync(int requestId)
+        {
+            var request = await _dbContext.Requests.FirstOrDefaultAsync(r => r.Id == requestId);
+            if (request == null) return "Request not found.";
+
+            request.Status = "declined";
+            await _dbContext.SaveChangesAsync();
+
+            return "Request declined.";
+        }
+
+
     }
 }
