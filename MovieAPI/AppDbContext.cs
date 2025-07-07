@@ -21,7 +21,15 @@ public class AppDbContext : DbContext
     public DbSet<Cinema> Cinemas { get; set; }
     public DbSet<Ticket> Tickets {  get; set; }
     public DbSet<Request> Requests { get; set; }
+    public DbSet<Pripada> Pripada { get; set; }
+    public DbSet<Genre> Genres { get; set; }
 
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
 
+        modelBuilder.Entity<Pripada>()
+            .HasKey(p => new { p.ContentId, p.GenreId });
+    }
 
 }

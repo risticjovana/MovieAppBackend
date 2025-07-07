@@ -34,6 +34,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<MovieService>();
+builder.Services.AddScoped<ContentService>();
 
 // Configure JWT Authentication
 var jwtSection = builder.Configuration.GetSection("JwtSettings");
