@@ -26,5 +26,18 @@ namespace MovieAPI.Controllers
 
             return Ok(contents);
         }
+
+        [HttpGet("series-by-genre/{genreName}")]
+        public async Task<IActionResult> GetSeriesContentByGenre(string genreName)
+        {
+            var contents = await _contentService.GetTVSeriesByGenreAsync(genreName);
+
+            if (contents == null || contents.Count == 0)
+            {
+                return NotFound($"No content found for genre: {genreName}");
+            }
+
+            return Ok(contents);
+        }
     }
 }

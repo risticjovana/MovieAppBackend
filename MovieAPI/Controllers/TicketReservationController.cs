@@ -89,6 +89,16 @@ namespace MovieAPI.Controllers
             return Ok(movie);
         }
 
+        [HttpGet("getseriesbyid/{contentId}")]
+        public async Task<IActionResult> GetSeriesById(int contentId)
+        {
+            var movie = await _movieService.GetSeriesByIdAsync(contentId);
+            if (movie == null)
+                return NotFound();
+
+            return Ok(movie);
+        }
+
         [HttpGet("getcinemabyid/{cinemaId}")]
         public async Task<IActionResult> GetCinemaById(int cinemaId)
         {

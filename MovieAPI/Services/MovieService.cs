@@ -1,5 +1,6 @@
 ﻿using MovieAPI.Models.TicketReservation;
 using Microsoft.EntityFrameworkCore;
+using MovieAPI.Models.Content;
 
 namespace MovieAPI.Services
 {
@@ -114,6 +115,30 @@ namespace MovieAPI.Services
 
             return movie;
         }
+
+        public async Task<TVSeriesDTO?> GetSeriesByIdAsync(int contentId)
+        {
+            var series = await (from vc in _dbContext.VisualContents
+                               join m in _dbContext.TVSeries on vc.ContentId equals m.ContentId
+                               where vc.ContentId == contentId
+                               select new TVSeriesDTO
+                               {
+                                   ContentId = vc.ContentId,
+                                   Name = vc.Name,
+                                   Description = vc.Description,
+                                   Rating = vc.Rating,
+                                   ContentTypeString = vc.ContentTypeString,
+                                   Year = vc.Year,
+                                   IsFavorite = vc.IsFavorite,
+                                   Watched = vc.Watched,
+                                   NumberOfSeasons = m.NumberOfSeasons,
+                                   DirectorId = vc.DirectorId,
+                                   NumberOfEpisodes = m.NumberOfEpisodes,
+                               }).FirstOrDefaultAsync();
+
+            return series;
+        }
+
         public async Task<Cinema?> GetCinemaByIdAsync(int cinemaId)
         {
             return await _dbContext.Cinemas

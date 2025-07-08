@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MovieAPI.Models.User;
 using MovieAPI.Models.TicketReservation;
+using MovieAPI.Models.Content;
 
 public class AppDbContext : DbContext
 {
@@ -16,6 +17,7 @@ public class AppDbContext : DbContext
     public DbSet<Editor> Editors { get; set; }
     public DbSet<Moderator> Moderators { get; set; }
     public DbSet<Movie> Movies { get; set; }
+    public DbSet<TVSeries> TVSeries { get; set; }
     public DbSet<VisualContent> VisualContents { get; set; }
     public DbSet<Projection> Projections { get; set; }
     public DbSet<Cinema> Cinemas { get; set; }
