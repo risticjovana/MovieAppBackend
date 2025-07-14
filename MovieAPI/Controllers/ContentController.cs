@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using MovieAPI.Models.Content;
 using MovieAPI.Services;
 
 namespace MovieAPI.Controllers
@@ -38,6 +40,36 @@ namespace MovieAPI.Controllers
             }
 
             return Ok(contents);
+        }
+
+        [HttpGet("{contentId}/content-reviews")]
+        public async Task<IActionResult> GetContentReviews(int contentId)
+        {
+            var reviews = await _contentService.GetReviewsByContentIdAsync(contentId);
+
+            if (reviews == null || reviews.Count == 0)
+            {
+                return NotFound($"No reviews found for content ID: {contentId}");
+            }
+
+            return Ok(reviews);
+        }
+         
+        [HttpPost("{contentId}/add-review")]
+        public async Task<IActionResult> AddContentReview(int contentId, [FromBody] Review review)
+        {
+            if (review == null)
+            {
+                return BadRequest("Review cannot be null.");
+            }
+
+            review.ContentId = contentId;
+            review.Date = DateTime.UtcNow;
+
+            var createdReview = await _contentService.AddReviewAsync(review);
+
+            return CreatedAtAction(nameof(GetContentReviews),
+                new { contentId = createdReview.ContentId }, createdReview);
         }
     }
 }

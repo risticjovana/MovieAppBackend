@@ -25,6 +25,7 @@ public class AppDbContext : DbContext
     public DbSet<Request> Requests { get; set; }
     public DbSet<Pripada> Pripada { get; set; }
     public DbSet<Genre> Genres { get; set; }
+    public DbSet<Review> Reviews { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

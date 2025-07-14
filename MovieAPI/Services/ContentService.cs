@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MovieAPI.Models.Content;
 using MovieAPI.Models.TicketReservation;
 
 namespace MovieAPI.Services
@@ -36,6 +37,24 @@ namespace MovieAPI.Services
                         .ToListAsync();
 
             return series;
+        }
+
+        public async Task<List<Review>> GetReviewsByContentIdAsync(int contentId)
+        {
+            return await _dbContext.Reviews
+                .Where(r => r.ContentId == contentId)
+                .ToListAsync();
+        }
+
+        public async Task<Review> AddReviewAsync(Review review)
+        { 
+            var maxId = await _dbContext.Reviews.MaxAsync(r => (int?)r.ReviewId) ?? 0; 
+            review.ReviewId = maxId + 1;
+
+            _dbContext.Reviews.Add(review);
+            await _dbContext.SaveChangesAsync();
+
+            return review;
         }
 
     }
