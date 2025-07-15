@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using MovieAPI.Models.User;
 using MovieAPI.Models.TicketReservation;
 using MovieAPI.Models.Content;
+using MovieAPI.Models.Collections;
 
 public class AppDbContext : DbContext
 {
@@ -26,6 +27,11 @@ public class AppDbContext : DbContext
     public DbSet<Pripada> Pripada { get; set; }
     public DbSet<Genre> Genres { get; set; }
     public DbSet<Review> Reviews { get; set; }
+    public DbSet<MovieCollection> MovieCollections { get; set; }
+    public DbSet<CollectionItem> CollectionItems { get; set; }
+    public DbSet<EditorialCollection> EditorialCollections { get; set; }
+    public DbSet<PersonalCollection> PersonalCollections { get; set; }
+    public DbSet<SavedCollection> SavedCollections { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -33,6 +39,10 @@ public class AppDbContext : DbContext
 
         modelBuilder.Entity<Pripada>()
             .HasKey(p => new { p.ContentId, p.GenreId });
+        modelBuilder.Entity<CollectionItem>()
+            .HasKey(ci => new { ci.ContentId, ci.CollectionId });
+        modelBuilder.Entity<SavedCollection>()
+            .HasKey(sc => new { sc.UserId, sc.CollectionId });
     }
 
 }
