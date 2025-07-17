@@ -71,7 +71,7 @@ namespace MovieAPI.Services
             return collection;
         }
 
-        public async Task<bool> AddContentToCollectionAsync(int contentId, int collectionId, int userId)
+        public async Task<bool> AddContentToCollectionAsync(int collectionId, int contentId, int userId)
         { 
             var contentExists = await _dbContext.VisualContents.AnyAsync(vc => vc.ContentId == contentId);
             var collectionExists = await _dbContext.MovieCollections.AnyAsync(c => c.Id == collectionId);
@@ -97,6 +97,11 @@ namespace MovieAPI.Services
             var alreadySaved = await _dbContext.SavedCollections
                 .AnyAsync(sc => sc.UserId == userId && sc.CollectionId == collectionId);
 
+            var alreadyTracked = _dbContext.ChangeTracker
+                .Entries<CollectionItem>()
+                .Any(e => e.Entity.ContentId == contentId && e.Entity.CollectionId == collectionId);
+
+
             if (!alreadySaved)
             {
                 _dbContext.SavedCollections.Add(new SavedCollection
@@ -104,12 +109,6 @@ namespace MovieAPI.Services
                     UserId = userId,
                     CollectionId = collectionId
                 });
-
-                var collection = await _dbContext.MovieCollections.FindAsync(collectionId);
-                if (collection != null)
-                {
-                    collection.SaveCount += 1;
-                }
             }
 
             await _dbContext.SaveChangesAsync();

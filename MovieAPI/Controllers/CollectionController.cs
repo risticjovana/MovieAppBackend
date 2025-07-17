@@ -43,7 +43,7 @@ namespace MovieAPI.Controllers
         [HttpPost("{collectionId}/add-content/{contentId}")]
         public async Task<IActionResult> AddContentToCollection(int collectionId, int contentId, int userId)
         {
-            var success = await _collectionService.AddContentToCollectionAsync(contentId, collectionId, userId);
+            var success = await _collectionService.AddContentToCollectionAsync(collectionId, contentId, userId);
 
             if (!success)
                 return BadRequest("Failed to add content to collection. Content or collection may not exist, or it may already be added.");
