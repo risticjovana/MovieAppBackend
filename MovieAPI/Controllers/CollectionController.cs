@@ -61,5 +61,27 @@ namespace MovieAPI.Controllers
 
             return Ok(collections);
         }
+         
+        [HttpGet("{collectionId}/contents")]
+        public async Task<IActionResult> GetAllContentByCollectionId(int collectionId)
+        {
+            var contents = await _collectionService.GetAllContentByCollectionIdAsync(collectionId);
+
+            if (contents == null || contents.Count == 0)
+                return NotFound($"No content found for collection ID: {collectionId}");
+
+            return Ok(contents);
+        }
+         
+        [HttpGet("{collectionId}")]
+        public async Task<IActionResult> GetCollectionInfoById(int collectionId)
+        {
+            var collection = await _collectionService.GetCollectionInfoByIdAsync(collectionId);
+
+            if (collection == null)
+                return NotFound($"Collection with ID {collectionId} not found.");
+
+            return Ok(collection);
+        }
     }
 }

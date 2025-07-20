@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MovieAPI.Models.Collections; 
+using MovieAPI.Models.Collections;
+using MovieAPI.Models.TicketReservation;
 
 namespace MovieAPI.Services
 {
@@ -125,6 +126,25 @@ namespace MovieAPI.Services
                                  .ToListAsync();
 
             return collections;
+        }
+
+        public async Task<List<VisualContent>> GetAllContentByCollectionIdAsync(int collectionId)
+        {
+            var contents = await (from ci in _dbContext.CollectionItems
+                                  join vc in _dbContext.VisualContents on ci.ContentId equals vc.ContentId
+                                  where ci.CollectionId == collectionId
+                                  select vc)
+                                  .ToListAsync();
+
+            return contents;
+        }
+
+        public async Task<MovieCollection?> GetCollectionInfoByIdAsync(int collectionId)
+        {
+            var collection = await _dbContext.MovieCollections
+                .FirstOrDefaultAsync(c => c.Id == collectionId);
+
+            return collection;
         }
     }
 }
