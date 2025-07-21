@@ -146,5 +146,21 @@ namespace MovieAPI.Services
 
             return collection;
         }
+
+        public async Task<List<VisualContent>> GetAvailableContentNotInCollectionAsync(int collectionId)
+        {
+            var allContent = await _dbContext.VisualContents.ToListAsync();
+            var usedContentIds = await _dbContext.CollectionItems
+                .Where(ci => ci.CollectionId == collectionId)
+                .Select(ci => ci.ContentId)
+                .ToListAsync();
+
+            var available = allContent
+                .Where(vc => !usedContentIds.Contains(vc.ContentId))
+                .ToList();
+
+            return available;
+        }
+
     }
 }

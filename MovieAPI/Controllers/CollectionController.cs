@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MovieAPI.Models.Collections;
 using MovieAPI.Services;
 
@@ -83,5 +84,18 @@ namespace MovieAPI.Controllers
 
             return Ok(collection);
         }
+
+        [HttpGet("{collectionId}/available-content")]
+        public async Task<IActionResult> GetAvailableContentNotInCollection(int collectionId)
+        {
+            var contents = await _collectionService.GetAvailableContentNotInCollectionAsync(collectionId);
+
+            if (contents == null || contents.Count == 0)
+                return NotFound("No available content found.");
+
+            return Ok(contents);
+        }
+
+
     }
 }
