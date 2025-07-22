@@ -94,23 +94,6 @@ namespace MovieAPI.Services
 
                 _dbContext.CollectionItems.Add(item);
             }
-             
-            var alreadySaved = await _dbContext.SavedCollections
-                .AnyAsync(sc => sc.UserId == userId && sc.CollectionId == collectionId);
-
-            var alreadyTracked = _dbContext.ChangeTracker
-                .Entries<CollectionItem>()
-                .Any(e => e.Entity.ContentId == contentId && e.Entity.CollectionId == collectionId);
-
-
-            if (!alreadySaved)
-            {
-                _dbContext.SavedCollections.Add(new SavedCollection
-                {
-                    UserId = userId,
-                    CollectionId = collectionId
-                });
-            }
 
             await _dbContext.SaveChangesAsync();
             return true;
@@ -160,6 +143,60 @@ namespace MovieAPI.Services
                 .ToList();
 
             return available;
+        }
+
+        public async Task<List<MovieCollection>> GetAllCollectionsExceptUserAsync(int userId)
+        {
+            return await _dbContext.MovieCollections
+                .Where(c => c.UserId != userId)
+                .ToListAsync();
+        }
+
+        public async Task<bool> DeleteCollectionAsync(int collectionId)
+        {
+            var collection = await _dbContext.MovieCollections
+                .FirstOrDefaultAsync(c => c.Id == collectionId);
+
+            if (collection == null)
+                return false;
+
+            var items = await _dbContext.CollectionItems
+                .Where(ci => ci.CollectionId == collectionId)
+                .ToListAsync();
+            if (items.Any())
+                _dbContext.CollectionItems.RemoveRange(items);
+
+            _dbContext.SaveChangesAsync();
+
+            var personal = await _dbContext.PersonalCollections
+                .FirstOrDefaultAsync(p => p.CollectionId == collectionId);
+            if (personal != null)
+                _dbContext.PersonalCollections.Remove(personal);
+
+            _dbContext.SaveChangesAsync();
+
+            var editorial = await _dbContext.EditorialCollections
+                .FirstOrDefaultAsync(e => e.CollectionId == collectionId);
+            if (editorial != null)
+                _dbContext.EditorialCollections.Remove(editorial);
+
+            _dbContext.MovieCollections.Remove(collection);
+
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> RemoveContentFromCollectionAsync(int collectionId, int contentId)
+        {
+            var item = await _dbContext.CollectionItems
+                .FirstOrDefaultAsync(ci => ci.CollectionId == collectionId && ci.ContentId == contentId);
+
+            if (item == null)
+                return false;
+
+            _dbContext.CollectionItems.Remove(item);
+            await _dbContext.SaveChangesAsync();
+            return true;
         }
 
     }

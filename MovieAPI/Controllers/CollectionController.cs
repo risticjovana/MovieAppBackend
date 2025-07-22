@@ -96,6 +96,35 @@ namespace MovieAPI.Controllers
             return Ok(contents);
         }
 
+        [HttpGet("except-user/{userId}")]
+        public async Task<IActionResult> GetAllCollectionsExceptUser(int userId)
+        {
+            var collections = await _collectionService.GetAllCollectionsExceptUserAsync(userId);
 
+            if (collections == null || collections.Count == 0)
+                return NotFound("No collections found.");
+
+            return Ok(collections);
+        }
+         
+        [HttpDelete("{collectionId}")]
+        public async Task<IActionResult> DeleteCollection(int collectionId)
+        {
+            var success = await _collectionService.DeleteCollectionAsync(collectionId);
+            if (!success)
+                return NotFound($"Collection with ID {collectionId} not found.");
+
+            return Ok("Collection deleted successfully.");
+        }
+         
+        [HttpDelete("{collectionId}/content/{contentId}")]
+        public async Task<IActionResult> RemoveContentFromCollection(int collectionId, int contentId)
+        {
+            var success = await _collectionService.RemoveContentFromCollectionAsync(collectionId, contentId);
+            if (!success)
+                return NotFound("The content is not part of the collection or doesn't exist.");
+
+            return Ok("Content removed from collection successfully.");
+        }
     }
 }
