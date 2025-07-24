@@ -32,6 +32,7 @@ public class AppDbContext : DbContext
     public DbSet<EditorialCollection> EditorialCollections { get; set; }
     public DbSet<PersonalCollection> PersonalCollections { get; set; }
     public DbSet<SavedCollection> SavedCollections { get; set; }
+    public DbSet<Follow> Follows { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -43,6 +44,20 @@ public class AppDbContext : DbContext
             .HasKey(ci => new { ci.ContentId, ci.CollectionId });
         modelBuilder.Entity<SavedCollection>()
             .HasKey(sc => new { sc.UserId, sc.CollectionId });
+        modelBuilder.Entity<Follow>()
+            .HasKey(f => new { f.FollowerId, f.FolloweeId });
+
+        modelBuilder.Entity<Follow>()
+            .HasOne(f => f.Follower)
+            .WithMany()
+            .HasForeignKey(f => f.FollowerId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Follow>()
+            .HasOne(f => f.Followee)
+            .WithMany()
+            .HasForeignKey(f => f.FolloweeId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 
 }

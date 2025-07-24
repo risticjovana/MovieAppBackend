@@ -272,6 +272,38 @@ namespace MovieAPI.Services
             return "Request declined.";
         }
 
+        public async Task<List<User>> GetAllUsersExceptAsync(int excludedUserId)
+        {
+            return await _dbContext.Users
+                .Where(u => u.Id != excludedUserId)
+                .ToListAsync();
+        }
+
+        public async Task<bool> FollowUserAsync(int followerId, int followeeId)
+        {
+            if (await _dbContext.Follows.AnyAsync(f => f.FollowerId == followerId && f.FolloweeId == followeeId))
+                return false;
+
+            var follow = new Follow { FollowerId = followerId, FolloweeId = followeeId };
+            await _dbContext.Follows.AddAsync(follow);
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<List<User>> GetFollowersAsync(int userId)
+        { 
+            var followerIds = await _dbContext.Follows
+                .Where(f => f.FollowerId == userId)
+                .Select(f => f.FolloweeId)
+                .ToListAsync();
+
+            var followers = await _dbContext.Users
+                .Where(u => followerIds.Contains(u.Id))
+                .ToListAsync();
+
+            return followers;
+        }
+
 
     }
 }

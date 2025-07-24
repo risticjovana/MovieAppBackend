@@ -126,5 +126,24 @@ namespace MovieAPI.Controllers
 
             return Ok("Content removed from collection successfully.");
         }
+
+        [HttpPost("save")]
+        public async Task<IActionResult> SaveCollection([FromBody] SaveCollectionRequest model)
+        {
+            var result = await _collectionService.SaveCollectionAsync(model.UserId, model.CollectionId);
+
+            if (!result)
+                return BadRequest("Collection is already saved.");
+
+            return Ok("Collection saved successfully.");
+        }
+
+        [HttpGet("saved/user/{userId}")]
+        public async Task<IActionResult> GetSavedCollectionsForUser(int userId)
+        {
+            var collections = await _collectionService.GetSavedCollectionsByUserIdAsync(userId);
+            return Ok(collections);
+        } 
+
     }
 }

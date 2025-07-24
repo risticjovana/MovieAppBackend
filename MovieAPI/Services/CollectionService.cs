@@ -199,5 +199,36 @@ namespace MovieAPI.Services
             return true;
         }
 
+        public async Task<bool> SaveCollectionAsync(int userId, int collectionId)
+        {
+            bool alreadySaved = await _dbContext.SavedCollections
+                .AnyAsync(sc => sc.UserId == userId && sc.CollectionId == collectionId);
+
+            if (alreadySaved)
+                return false;
+
+            var saved = new SavedCollection
+            {
+                UserId = userId,
+                CollectionId = collectionId
+            };
+
+            _dbContext.SavedCollections.Add(saved);
+            await _dbContext.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<List<MovieCollection>> GetSavedCollectionsByUserIdAsync(int userId)
+        {
+            var savedCollections = await (from sc in _dbContext.SavedCollections
+                                          join c in _dbContext.MovieCollections on sc.CollectionId equals c.Id
+                                          where sc.UserId == userId
+                                          select c)
+                                          .ToListAsync();
+
+            return savedCollections;
+        }  
+
     }
 }

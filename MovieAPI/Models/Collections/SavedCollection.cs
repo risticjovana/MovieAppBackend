@@ -12,11 +12,11 @@ namespace MovieAPI.Models.Collections
 
         [Key, Column("id_kol", Order = 1)]
         public int CollectionId { get; set; }
-
-        [ForeignKey("UserId")]
-        public RegularUser User { get; set; }
-
-        [ForeignKey("CollectionId")]
-        public MovieCollection Collection { get; set; }
     }
+
+} 
+public class SaveCollectionRequest
+{
+    public int UserId { get; set; }
+    public int CollectionId { get; set; }
 }

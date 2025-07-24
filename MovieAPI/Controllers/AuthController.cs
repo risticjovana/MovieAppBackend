@@ -134,5 +134,32 @@ namespace MovieAPI.Controllers
             return Ok(result);
         }
 
+        [HttpGet("all-except/{id}")]
+        public async Task<IActionResult> GetAllUsersExcept(int id)
+        {
+            var users = await _authService.GetAllUsersExceptAsync(id);
+            return Ok(users);
+        }
+
+        [HttpPost("follow")]
+        public async Task<IActionResult> FollowUser([FromBody] FollowRequest model)
+        {
+            int followerId = model.FollowerId;
+            int followeeId = model.FolloweeId;
+
+            var result = await _authService.FollowUserAsync(followerId, followeeId);
+
+            if (!result)
+                return BadRequest("Failed to follow user.");
+
+            return Ok("Followed user successfully.");
+        }
+
+        [HttpGet("followers/{userId}")]
+        public async Task<IActionResult> GetFollowers(int userId)
+        {
+            var followers = await _authService.GetFollowersAsync(userId);
+            return Ok(followers);
+        }
     }
 }
