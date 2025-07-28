@@ -228,7 +228,41 @@ namespace MovieAPI.Services
                                           .ToListAsync();
 
             return savedCollections;
-        }  
+        }
+
+        public async Task<bool> AddCommentToCollectionAsync(int collectionId, int moderatorId, string text)
+        {
+            // Ensure the collection exists
+            var collectionExists = await _dbContext.MovieCollections.AnyAsync(c => c.Id == collectionId);
+            if (!collectionExists)
+                return false;
+
+
+            // Try to get the associated userId from CUVA (SavedCollection)
+            var savedEntry = await _dbContext.SavedCollections
+                .FirstOrDefaultAsync(sc => sc.CollectionId == collectionId);
+
+            if (savedEntry == null)
+                return false;
+
+            var maxId = await _dbContext.Comments.MaxAsync(c => (int?)c.Id) ?? 0;
+            var newId = maxId + 1;
+
+            var comment = new Comment
+            {
+                Id = newId,
+                CollectionId = collectionId,
+                UserId = savedEntry.UserId, // From CUVA
+                ModeratorId = moderatorId,
+                Text = text,
+                Date = DateTime.UtcNow
+            };
+
+            _dbContext.Comments.Add(comment);
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+
 
     }
 }

@@ -33,6 +33,7 @@ public class AppDbContext : DbContext
     public DbSet<PersonalCollection> PersonalCollections { get; set; }
     public DbSet<SavedCollection> SavedCollections { get; set; }
     public DbSet<Follow> Follows { get; set; }
+    public DbSet<Comment> Comments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

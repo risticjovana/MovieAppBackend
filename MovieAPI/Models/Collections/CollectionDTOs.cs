@@ -17,5 +17,12 @@
             public int EditorId { get; set; }
         }
 
+        public class AddCommentRequest
+        {
+            public int CollectionId { get; set; }
+            public int ModeratorId { get; set; }
+            public string Text { get; set; } = string.Empty;
+        }
+
     }
 }

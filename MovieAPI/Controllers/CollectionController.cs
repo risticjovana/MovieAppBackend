@@ -143,7 +143,22 @@ namespace MovieAPI.Controllers
         {
             var collections = await _collectionService.GetSavedCollectionsByUserIdAsync(userId);
             return Ok(collections);
-        } 
+        }
+
+        [HttpPost("add-comment")]
+        public async Task<IActionResult> AddCommentToCollection([FromBody] CollectionDTOs.AddCommentRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Text))
+                return BadRequest("Comment text cannot be empty.");
+
+            var success = await _collectionService.AddCommentToCollectionAsync(
+                request.CollectionId, request.ModeratorId, request.Text);
+
+            if (!success)
+                return BadRequest("Failed to add comment. Collection may not exist or is not saved by a user.");
+
+            return Ok("Comment added successfully.");
+        }
 
     }
 }
