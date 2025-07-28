@@ -160,5 +160,13 @@ namespace MovieAPI.Controllers
             return Ok("Comment added successfully.");
         }
 
+        [HttpGet("{collectionId}/comments")]
+        public async Task<IActionResult> GetCommentsForCollection(int collectionId)
+        {
+            var comments = await _collectionService.GetCommentsByCollectionIdAsync(collectionId);
+            return Ok(comments);
+        }
+
+
     }
 }

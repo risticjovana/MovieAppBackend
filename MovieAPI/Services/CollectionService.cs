@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MovieAPI.Models.Collections;
 using MovieAPI.Models.TicketReservation;
+using static MovieAPI.Models.Collections.CollectionDTOs;
 
 namespace MovieAPI.Services
 {
@@ -261,6 +262,20 @@ namespace MovieAPI.Services
             _dbContext.Comments.Add(comment);
             await _dbContext.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<List<CollectionCommentDTO>> GetCommentsByCollectionIdAsync(int collectionId)
+        {
+            var comments = await _dbContext.Comments
+                .Where(c => c.CollectionId == collectionId)
+                .Select(c => new CollectionCommentDTO
+                {
+                    Text = c.Text,
+                    ModeratorId = c.ModeratorId
+                })
+                .ToListAsync();
+
+            return comments;
         }
 
 
