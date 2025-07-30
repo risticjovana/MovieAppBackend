@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MovieAPI.Models.Collections;
 using MovieAPI.Models.TicketReservation;
+using MovieAPI.Models.User;
 using static MovieAPI.Models.Collections.CollectionDTOs;
 
 namespace MovieAPI.Services
@@ -43,7 +44,7 @@ namespace MovieAPI.Services
             return collection;
         }
 
-        public async Task<MovieCollection> CreateEditorialCollectionAsync(string name, string description, int moderatorId, int editorId)
+        public async Task<MovieCollection> CreateEditorialCollectionAsync(string name, string description, int editorId)
         {
             var maxId = await _dbContext.MovieCollections.MaxAsync(c => (int?)c.Id) ?? 0;
             var newId = maxId + 1;
@@ -62,7 +63,6 @@ namespace MovieAPI.Services
             var editorial = new EditorialCollection
             {
                 CollectionId = newId,
-                ModeratorId = moderatorId,
                 ContentEditorId = editorId
             };
 
@@ -106,6 +106,17 @@ namespace MovieAPI.Services
             var collections = await (from c in _dbContext.MovieCollections
                                      join pc in _dbContext.PersonalCollections on c.Id equals pc.CollectionId
                                      where pc.UserId == userId
+                                     select c)
+                                 .ToListAsync();
+
+            return collections;
+        }
+
+        public async Task<List<MovieCollection>> GetEditorialCollectionsByUserIdAsync(int userId)
+        {
+            var collections = await (from c in _dbContext.MovieCollections
+                                     join pc in _dbContext.EditorialCollections on c.Id equals pc.CollectionId
+                                     where pc.ContentEditorId == userId
                                      select c)
                                  .ToListAsync();
 
@@ -180,6 +191,8 @@ namespace MovieAPI.Services
                 .FirstOrDefaultAsync(e => e.CollectionId == collectionId);
             if (editorial != null)
                 _dbContext.EditorialCollections.Remove(editorial);
+                _dbContext.SaveChangesAsync();
+
 
             _dbContext.MovieCollections.Remove(collection);
 

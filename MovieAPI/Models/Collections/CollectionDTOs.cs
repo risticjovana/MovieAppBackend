@@ -12,8 +12,7 @@
         public class CreateEditorialCollectionRequest
         {
             public string Name { get; set; }
-            public string Description { get; set; }
-            public int ModeratorId { get; set; }
+            public string Description { get; set; } 
             public int EditorId { get; set; }
         }
 

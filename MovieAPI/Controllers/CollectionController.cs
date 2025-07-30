@@ -36,7 +36,7 @@ namespace MovieAPI.Controllers
                 return BadRequest("Invalid request.");
 
             var collection = await _collectionService.CreateEditorialCollectionAsync(
-                request.Name, request.Description, request.ModeratorId, request.EditorId);
+                request.Name, request.Description, request.EditorId);
 
             return Ok(collection);
         }
@@ -62,7 +62,18 @@ namespace MovieAPI.Controllers
 
             return Ok(collections);
         }
-         
+
+        [HttpGet("editorial/user/{userId}")]
+        public async Task<IActionResult> GetEditorialCollectionsByUserId(int userId)
+        {
+            var collections = await _collectionService.GetEditorialCollectionsByUserIdAsync(userId);
+
+            if (collections == null || collections.Count == 0)
+                return NotFound($"No personal collections found for user ID: {userId}");
+
+            return Ok(collections);
+        }
+
         [HttpGet("{collectionId}/contents")]
         public async Task<IActionResult> GetAllContentByCollectionId(int collectionId)
         {
