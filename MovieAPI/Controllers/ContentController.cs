@@ -71,5 +71,17 @@ namespace MovieAPI.Controllers
             return CreatedAtAction(nameof(GetContentReviews),
                 new { contentId = createdReview.ContentId }, createdReview);
         }
+
+        [HttpDelete("{reviewId}/delete-review")]
+        public async Task<IActionResult> DeleteReview(int reviewId)
+        {
+            var review = await _contentService.GetReviewByIdAsync(reviewId);
+            if (review == null)
+                return NotFound($"No review found with ID: {reviewId}");
+
+            await _contentService.DeleteReviewAsync(reviewId);
+            return NoContent();
+        }
+
     }
 }

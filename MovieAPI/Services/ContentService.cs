@@ -57,5 +57,20 @@ namespace MovieAPI.Services
             return review;
         }
 
+        public async Task<Review?> GetReviewByIdAsync(int reviewId)
+        {
+            return await _dbContext.Reviews.FirstOrDefaultAsync(r => r.ReviewId == reviewId);
+        }
+
+        public async Task DeleteReviewAsync(int reviewId)
+        {
+            var review = await _dbContext.Reviews.FirstOrDefaultAsync(r => r.ReviewId == reviewId);
+            if (review != null)
+            {
+                _dbContext.Reviews.Remove(review);
+                await _dbContext.SaveChangesAsync();
+            }
+        }
+
     }
 }

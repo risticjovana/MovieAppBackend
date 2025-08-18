@@ -151,7 +151,8 @@ namespace MovieAPI.Services
                 .ToListAsync();
 
             var available = allContent
-                .Where(vc => !usedContentIds.Contains(vc.ContentId))
+                .Where(vc => !usedContentIds.Contains(vc.ContentId)
+                  && vc.ContentTypeString == "TVSeries")
                 .ToList();
 
             return available;
@@ -252,13 +253,6 @@ namespace MovieAPI.Services
                 return false;
 
 
-            // Try to get the associated userId from CUVA (SavedCollection)
-            var savedEntry = await _dbContext.SavedCollections
-                .FirstOrDefaultAsync(sc => sc.CollectionId == collectionId);
-
-            if (savedEntry == null)
-                return false;
-
             var maxId = await _dbContext.Comments.MaxAsync(c => (int?)c.Id) ?? 0;
             var newId = maxId + 1;
 
@@ -266,7 +260,7 @@ namespace MovieAPI.Services
             {
                 Id = newId,
                 CollectionId = collectionId,
-                UserId = savedEntry.UserId, // From CUVA
+                UserId = moderatorId, // From CUVA
                 ModeratorId = moderatorId,
                 Text = text,
                 Date = DateTime.UtcNow
