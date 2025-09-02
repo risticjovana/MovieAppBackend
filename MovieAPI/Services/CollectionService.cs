@@ -192,8 +192,8 @@ namespace MovieAPI.Services
                 .FirstOrDefaultAsync(e => e.CollectionId == collectionId);
             if (editorial != null)
                 _dbContext.EditorialCollections.Remove(editorial);
-                _dbContext.SaveChangesAsync();
 
+            _dbContext.SaveChangesAsync();
 
             _dbContext.MovieCollections.Remove(collection);
 
@@ -277,12 +277,26 @@ namespace MovieAPI.Services
                 .Where(c => c.CollectionId == collectionId)
                 .Select(c => new CollectionCommentDTO
                 {
+                    Id = c.Id,
                     Text = c.Text,
                     ModeratorId = c.ModeratorId
                 })
                 .ToListAsync();
 
             return comments;
+        }
+
+        public async Task<bool> DeleteCommentFromCollectionAsync(int collectionId, int commentId)
+        {
+            var comment = await _dbContext.Comments
+                .FirstOrDefaultAsync(c => c.CollectionId == collectionId && c.Id == commentId);
+
+            if (comment == null)
+                return false;
+
+            _dbContext.Comments.Remove(comment);
+            await _dbContext.SaveChangesAsync();
+            return true;
         }
 
 

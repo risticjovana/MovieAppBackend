@@ -178,6 +178,16 @@ namespace MovieAPI.Controllers
             return Ok(comments);
         }
 
+        [HttpDelete("{collectionId}/comments/{commentId}")]
+        public async Task<IActionResult> DeleteCommentFromCollection(int collectionId, int commentId)
+        {
+            var result = await _collectionService.DeleteCommentFromCollectionAsync(collectionId, commentId);
+
+            if (!result)
+                return NotFound("Comment not found or does not belong to this collection.");
+
+            return Ok("Comment deleted successfully.");
+        }
 
     }
 }
