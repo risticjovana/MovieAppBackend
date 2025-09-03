@@ -34,6 +34,7 @@ public class AppDbContext : DbContext
     public DbSet<SavedCollection> SavedCollections { get; set; }
     public DbSet<Follow> Follows { get; set; }
     public DbSet<Comment> Comments { get; set; }
+    public DbSet<Critique> Critiques { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

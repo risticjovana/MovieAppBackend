@@ -83,5 +83,42 @@ namespace MovieAPI.Controllers
             return NoContent();
         }
 
+        [HttpPost("add-critique")]
+        public async Task<IActionResult> AddContentCritique([FromBody] Critique critique)
+        {
+            if (critique == null)
+                return BadRequest(new { message = "Critique cannot be null." });
+
+            if (critique.ContentId == 0 || critique.CriticId == 0)
+                return BadRequest(new { message = "ContentId and CriticId must be provided." });
+
+            try
+            {
+                var created = await _contentService.AddCritiqueAsync(critique);
+                return Ok(created);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An unexpected error occurred." });
+            }
+        }
+
+
+        [HttpGet("{contentId}/content-critiques")]
+        public async Task<IActionResult> GetContentCritiques(int contentId)
+        {
+            var critiques = await _contentService.GetCritiquesByContentIdAsync(contentId);
+
+            if (critiques == null || critiques.Count == 0)
+            {
+                return NotFound($"No critiques found for content ID: {contentId}");
+            }
+
+            return Ok(critiques);
+        }
     }
 }
