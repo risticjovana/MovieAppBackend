@@ -56,30 +56,28 @@ namespace MovieAPI.Services
         {
             var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
             if (user == null)
-                return "User not found.";
+                return "Invalid username or password.";
 
             if (!VerifyPassword(password, user.PasswordHash))
                 return "Invalid password.";
 
-            // Generate JWT token
+            if (!string.Equals(user.Status, "active", StringComparison.OrdinalIgnoreCase))
+                return "User account has been blocked";
+
             var token = GenerateJwtToken(user);
 
             return $"Login successful! Token: {token}";
         }
 
         private string GenerateJwtToken(User user)
-        {
-            // Read the secret key from the configuration (appsettings.json)
+        { 
             var secretKey = _configuration.GetValue<string>("JwtSettings:SecretKey");
-
-            // Define token expiration time (e.g., 1 hour)
+             
             var expiresIn = DateTime.UtcNow.AddHours(1);
-
-            // Create security key from the secret key
+             
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-            // Create JWT token
+             
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new System.Security.Claims.ClaimsIdentity(new[]
@@ -98,21 +96,18 @@ namespace MovieAPI.Services
         }
 
         private string HashPasswordWithSalt(string password)
-        {
-            // Generate salt
+        { 
             byte[] salt = new byte[16];
             using var rng = RandomNumberGenerator.Create();
             rng.GetBytes(salt);
-
-            // Derive hash
+             
             var hash = KeyDerivation.Pbkdf2(
                 password: password,
                 salt: salt,
                 prf: KeyDerivationPrf.HMACSHA1,
                 iterationCount: 10000,
                 numBytesRequested: 256 / 8);
-
-            // Combine salt + hash (as base64)
+             
             return $"{Convert.ToBase64String(salt)}:{Convert.ToBase64String(hash)}";
         }
 
@@ -162,8 +157,7 @@ namespace MovieAPI.Services
             var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null)
                 return "User not found.";
-
-            // Convert from English (frontend) to Serbian (backend/database)
+             
             var requestedRoleSerbian = RoleTranslationHelper.ToSerbian(requestedRole);
 
             if (user.Role.ToString().ToLower() == requestedRoleSerbian.ToLower())
@@ -203,8 +197,7 @@ namespace MovieAPI.Services
             var user = request.User;
             var oldRole = user.RoleString.ToLower();
             var newRole = request.RequestedRole.ToLower();
-
-            //Remove from old role table
+             
             switch (oldRole)
             {
                 case "obican_korisnik":
@@ -228,8 +221,7 @@ namespace MovieAPI.Services
                     if (critic != null) _dbContext.Critics.Remove(critic);
                     break;
             }
-
-            // 2. Add to new role table
+             
             switch (newRole)
             {
                 case "obican_korisnik":
@@ -250,8 +242,7 @@ namespace MovieAPI.Services
                 default:
                     return "Invalid role.";
             }
-
-            //Update the user role and request status
+             
             user.RoleString = request.RequestedRole;
             request.Status = "approved";
 
@@ -270,6 +261,11 @@ namespace MovieAPI.Services
             await _dbContext.SaveChangesAsync();
 
             return "Request declined.";
+        }
+
+        public async Task<List<User>> GetAllUsersAsync()
+        {
+            return await _dbContext.Users.ToListAsync();
         }
 
         public async Task<List<User>> GetAllUsersExceptAsync(int excludedUserId)
@@ -302,6 +298,21 @@ namespace MovieAPI.Services
                 .ToListAsync();
 
             return followers;
+        }
+
+        public async Task<string> BlockUserAsync(int userId)
+        {
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null)
+                return "User not found.";
+
+            if (string.Equals(user.Status, "blocked", StringComparison.OrdinalIgnoreCase))
+                return "User is already blocked.";
+
+            user.Status = "blocked";
+            await _dbContext.SaveChangesAsync();
+
+            return $"User {user.Email} has been blocked.";
         }
 
 

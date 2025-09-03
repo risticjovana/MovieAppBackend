@@ -31,8 +31,8 @@ namespace MovieAPI.Controllers
         {
             var token = await _authService.LoginAsync(dto.Email, dto.Password);
 
-            if (token == null || token.StartsWith("Invalid") || token.StartsWith("User not"))
-                return Unauthorized("Invalid email or password");
+            if (token == null || token.StartsWith("Invalid") || token.StartsWith("User account"))
+                return Unauthorized(new { message = token });
 
             return Ok(new { token });
         }
@@ -45,7 +45,6 @@ namespace MovieAPI.Controllers
             if (user == null)
                 return NotFound("User not found.");
 
-            // You may want to limit which data is returned
             return Ok(new
             {
                 user.Id,
@@ -72,7 +71,6 @@ namespace MovieAPI.Controllers
         [HttpPost("request-role")]
         public async Task<IActionResult> RequestRoleChange([FromBody] RoleChangeRequestModel model)
         {
-            // Convert English role to Serbian before sending to service
             var requestedRoleSerbian = RoleTranslationHelper.ToSerbian(model.RequestedRole);
 
             var result = await _authService.RequestRoleChangeAsync(model.UserId, model.RequestedRole);
@@ -134,6 +132,13 @@ namespace MovieAPI.Controllers
             return Ok(result);
         }
 
+        [HttpGet("all-users")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var users = await _authService.GetAllUsersAsync();
+            return Ok(users);
+        }
+
         [HttpGet("all-except/{id}")]
         public async Task<IActionResult> GetAllUsersExcept(int id)
         {
@@ -161,5 +166,17 @@ namespace MovieAPI.Controllers
             var followers = await _authService.GetFollowersAsync(userId);
             return Ok(followers);
         }
+
+        [HttpPost("block-user/{id}")]
+        public async Task<IActionResult> BlockUser(int id)
+        {
+            var result = await _authService.BlockUserAsync(id);
+
+            if (result.Contains("not found"))
+                return NotFound(result);
+
+            return Ok(new { message = result });
+        }
+
     }
 }
