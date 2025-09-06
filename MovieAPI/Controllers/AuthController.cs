@@ -178,5 +178,16 @@ namespace MovieAPI.Controllers
             return Ok(new { message = result });
         }
 
+        [HttpGet("user-activity/{userId}")]
+        public async Task<IActionResult> GetUserActivity(int userId)
+        {
+            var activity = await _authService.GetUserActivityByUserIdAsync(userId);
+
+            if (activity == null)
+                return NotFound("No activity found for this user.");
+
+            return Ok(activity);
+        }
+
     }
 }

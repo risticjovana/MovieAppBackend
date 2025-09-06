@@ -315,6 +315,12 @@ namespace MovieAPI.Services
             return $"User {user.Email} has been blocked.";
         }
 
+        public async Task<UserActivity?> GetUserActivityByUserIdAsync(int userId)
+        {
+            return await _dbContext.UserActivities
+                .FirstOrDefaultAsync(a => a.UserId == userId);
+        }
+
 
     }
 }
