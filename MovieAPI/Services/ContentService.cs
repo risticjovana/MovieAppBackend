@@ -73,21 +73,27 @@ namespace MovieAPI.Services
         }
 
         public async Task<Critique> AddCritiqueAsync(Critique critique)
-        { 
+        {
             var maxId = await _dbContext.Critiques.MaxAsync(c => (int?)c.CritiqueId) ?? 0;
             critique.CritiqueId = maxId + 1;
-             
+
             var contentExists = await _dbContext.VisualContents.AnyAsync(vc => vc.ContentId == critique.ContentId);
             var criticExists = await _dbContext.Critics.AnyAsync(fc => fc.Id == critique.CriticId);
 
             if (!contentExists)
                 throw new ArgumentException($"VisualContent with ID {critique.ContentId} does not exist.");
              
+            if (critique.Date == default || critique.Date == DateTime.MinValue)
+            { 
+                critique.Date = DateTime.UtcNow;
+            }
+
             _dbContext.Critiques.Add(critique);
             await _dbContext.SaveChangesAsync();
 
             return critique;
         }
+
 
         public async Task<List<Critique>> GetCritiquesByContentIdAsync(int contentId)
         {

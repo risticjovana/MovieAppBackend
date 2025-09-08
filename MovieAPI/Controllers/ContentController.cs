@@ -114,11 +114,12 @@ namespace MovieAPI.Controllers
             var critiques = await _contentService.GetCritiquesByContentIdAsync(contentId);
 
             if (critiques == null || critiques.Count == 0)
-            {
-                return NotFound($"No critiques found for content ID: {contentId}");
+            { 
+                return Ok(new List<Critique>());
             }
 
             return Ok(critiques);
         }
+
     }
 }

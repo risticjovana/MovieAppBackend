@@ -151,8 +151,7 @@ namespace MovieAPI.Services
                 .ToListAsync();
 
             var available = allContent
-                .Where(vc => !usedContentIds.Contains(vc.ContentId)
-                  && vc.ContentTypeString == "TVSeries")
+                .Where(vc => !usedContentIds.Contains(vc.ContentId))
                 .ToList();
 
             return available;
@@ -247,7 +246,6 @@ namespace MovieAPI.Services
 
         public async Task<bool> AddCommentToCollectionAsync(int collectionId, int moderatorId, string text)
         {
-            // Ensure the collection exists
             var collectionExists = await _dbContext.MovieCollections.AnyAsync(c => c.Id == collectionId);
             if (!collectionExists)
                 return false;
@@ -260,7 +258,7 @@ namespace MovieAPI.Services
             {
                 Id = newId,
                 CollectionId = collectionId,
-                UserId = moderatorId, // From CUVA
+                UserId = moderatorId, 
                 ModeratorId = moderatorId,
                 Text = text,
                 Date = DateTime.UtcNow
